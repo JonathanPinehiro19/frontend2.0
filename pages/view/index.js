@@ -1,36 +1,50 @@
 $(document).ready(myView)
-
+a
 function myView() {
-
+    //Obtém o ID do artigo armazenado na sessionStorage do navegador.
     const articleId = parseInt(sessionStorage.article)
-
+    // Se o ID não for um número, redireciona para a página de erro 404
     if (isNaN(articleId)) loadpage('e404')
-
+    // Faz uma requisição GET para obter o artigo correspondente ao ID 
     $.get(app.apiBaseURL + 'articles', { id: articleId, status: 'on' })
         .done((data) => {
+            // se houver mais ou menos do que 1 artigo correspondente ao ID
             if (data.length != 1) loadpage('e404')
+            // armazena as informações do artigo em uma variável
             artData = data[0]
+            // atualiza o títilo da página com o título do artigo.
             $('#artTitle').html(artData.title)
+            // atualiza o coteúdo do artigo na página
             $('#artContent').html(artData.content)
+            // atualiza o contador de visualizações do artigo
             updateViews(artData)
+            // atualiza o título da página com o título o artigo.
             changeTitle(artData.title)
+            // obtém as informações do autor do artigo
             getAuthor(artData)
+            // obtém os artigos do mesmo autor
             getAuthorArticles(artData, 5)
+            // obtém o formulário de comentários do usuário
             getUserCommentForm(artData)
+            // obtém os comentários do artigo
             getArticleComments(artData, 999)
         })
+
         .fail((error) => {
+            // se a reqiozição falhar, exibe uma mensagem de erro ao usuário e redireciona para a página de erro 404
             popUp({ type: 'error', text: 'Artigo não encontrado!' })
+
             loadpage('e404')
         })
 
 }
 
 function getAuthor(artData) {
+    // faz uma requisição GET para obter as informações do autor do artigo
     $.get(app.apiBaseURL + 'users/' + artData.author)
         .done((userData) => {
 
-
+            // Cria uma lista com os links das redes sociais do autor, se houver
             var socialList = ''
             if (Object.keys(userData.social).length > 0) {
                 socialList = '<ul class="social-list">'
@@ -40,8 +54,9 @@ function getAuthor(artData) {
                 socialList += '</ul>'
             }
 
-
+            // atualiza as informações do autor do artigo na página
             $('#artMetadata').html(`<span>Por ${userData.name}</span><span>em ${myDate.sysToBr(artData.date)}.</span>`)
+
             $('#artAuthor').html(`
                 <img src="${userData.photo}" alt="${userData.name}">
                 <h3>${userData.name}</h3>
@@ -55,46 +70,50 @@ function getAuthor(artData) {
             loadpage('e404')
         })
 }
-
+// Busca os artigos do mesmo autor  insere na página 
 function getAuthorArticles(artData, limit) {
-
+    // Usa a função jQuery $.get para buscar os artigos do mesmo autor a partir da API, com os parâmetros definidos abaixo:
     $.get(app.apiBaseURL + 'articles', {
-        author: artData.author,
-        status: 'on',
-        id_ne: artData.id,
-        _limit: limit || 5
-    })
+        author: artData.author,  // Filtro pelo autor do artigo atual
+        status: 'on',            // Apenas artigos publicados (status = "on")
+        id_ne: artData.id,       // Exclui o artigo atual (para não aparecer na lista)
+        _limit: limit || 5       //Limita a quantidade de artigos (padrão = 5)
+    })  //Se a busca for bem-sucedida, executa a função abaixo:
         .done((artsData) => {
             if (artsData.length > 0) {
+                // Cria uma lista de artigos com o título de cada artigo encontrado.
                 var output = '<h3><i class="fa-solid fa-plus fa-fw"></i> Artigos</h3><ul>'
                 var rndData = artsData.sort(() => Math.random() - 0.5)
                 rndData.forEach((artItem) => {
                     output += `<li class="article" data-id="${artItem.id}">${artItem.title}</li>`
                 });
                 output += '</ul>'
+                // Insere a lista de artigos no elemento com o id "authorArticles"
                 $('#authorArtcicles').html(output)
             }
-        })
+        }) // Se a busca falhar, exibe uma mensagem de erro no console e carrega a página erro 404
         .fail((error) => {
             console.error(error)
             loadpage('e404')
         })
 
 }
-
+//  Função que busca e insere os comentários do artigo na página
 function getArticleComments(artData, limit) {
 
     var commentList = ''
-
+    // Usa a função jQuary $.get para buscar os comentários do artigo e partir da API, com os parâmetros definidos abaixo:
     $.get(app.apiBaseURL + 'comments', {
-        article: artData.id,
-        status: 'on',
-        _sort: 'date',
-        _order: 'desc',
-        _limit: limit || 999
+        article: artData.id,   //Filtro pelo artigo atual
+        status: 'on',          // Apenas comentários publicados (status = "on")
+        _sort: 'date',         // Ordena por data
+        _order: 'desc',        // Ordena em ordem decrecente.
+        _limit: limit || 999   // Limita a quantidade de comentários (padrão = 999)
     })
+        // Se a busca for bem-sucedida, executaa função abaixo:
         .done((cmtData) => {
             if (cmtData.length > 0) {
+                // Cria uma lista de comentários com as informações de cada comentário encontrado
                 cmtData.forEach((cmt) => {
                     var content = cmt.content.split("\n").join("<br>")
                     commentList += `
