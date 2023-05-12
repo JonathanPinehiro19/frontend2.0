@@ -74,10 +74,14 @@ function getAuthor(artData) {
 function getAuthorArticles(artData, limit) {
     // Usa a função jQuery $.get para buscar os artigos do mesmo autor a partir da API, com os parâmetros definidos abaixo:
     $.get(app.apiBaseURL + 'articles', {
-        author: artData.author,  // Filtro pelo autor do artigo atual
-        status: 'on',            // Apenas artigos publicados (status = "on")
-        id_ne: artData.id,       // Exclui o artigo atual (para não aparecer na lista)
-        _limit: limit || 5       //Limita a quantidade de artigos (padrão = 5)
+        // Filtro pelo autor do artigo atual
+        author: artData.author,  
+        // Apenas artigos publicados (status = "on")
+        status: 'on',  
+        // Exclui o artigo atual (para não aparecer na lista)          
+        id_ne: artData.id, 
+        //Limita a quantidade de artigos (padrão = 5)      
+        _limit: limit || 5       
     })  //Se a busca for bem-sucedida, executa a função abaixo:
         .done((artsData) => {
             if (artsData.length > 0) {
@@ -104,11 +108,16 @@ function getArticleComments(artData, limit) {
     var commentList = ''
     // Usa a função jQuary $.get para buscar os comentários do artigo e partir da API, com os parâmetros definidos abaixo:
     $.get(app.apiBaseURL + 'comments', {
-        article: artData.id,   //Filtro pelo artigo atual
-        status: 'on',          // Apenas comentários publicados (status = "on")
-        _sort: 'date',         // Ordena por data
-        _order: 'desc',        // Ordena em ordem decrecente.
-        _limit: limit || 999   // Limita a quantidade de comentários (padrão = 999)
+        //Filtro pelo artigo atual
+        article: artData.id,  
+        // Apenas comentários publicados (status = "on") 
+        status: 'on',   
+        // Ordena por data       
+        _sort: 'date',  
+        // Ordena em ordem decrecente.       
+        _order: 'desc',   
+        // Limita a quantidade de comentários (padrão = 999)     
+        _limit: limit || 999   
     })
         // Se a busca for bem-sucedida, executaa função abaixo:
         .done((cmtData) => {
@@ -133,13 +142,14 @@ function getArticleComments(artData, limit) {
             }
             $('#commentList').html(commentList)
         })
+        // Se a busca falhar, exibe uma mensagem de erro no console e carrega a página erro 404
         .fail((error) => {
             console.error(error)
             loadpage('e404')
         })
 
 }
-
+// Função que renderiza o formulário de comentário do usuário
 function getUserCommentForm(artData) {
 
     var cmtForm = ''

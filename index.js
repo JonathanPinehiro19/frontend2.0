@@ -28,7 +28,7 @@
 const app = {
     siteName: 'FrontEndeiros',
     siteSlogan: 'Programando para o futuro',
-    apiBaseURL: 'http://localhost:3000/'
+    apiBaseURL: 'https://testefrontendjs.onrender.com/'
 }
 
 /**
@@ -529,3 +529,4 @@ function openProfile() {
     sessionStorage.userId = userId
     loadpage ('aboutus')
 }
+
