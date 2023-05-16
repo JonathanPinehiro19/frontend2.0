@@ -96,7 +96,7 @@
  
  #wrap>header {
      align-items: center;
-     background-color: rgba(17, 45, 68, .7);
+     background-color: rgba(0, 0, 0, .7);
      border-radius: .35rem;
      border: 1px dotted #808080;
      display: flex;
